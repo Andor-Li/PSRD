@@ -274,17 +274,33 @@ $\alpha_0$ interpolates between channel-wise LayerNorm ($\alpha_0 = 1$) and spat
 
 <div align="center">
 
-<sub><b>Table 5.</b> Complexity and inference cost at 512 × 512 on a single RTX 4090. Left block: 31-band. Right block: 204-band.</sub>
+<sub><b>Table 5.</b> Complexity and inference cost, 31 bands, at 512 × 512 on a single RTX 4090.</sub>
 
-| Method | Params (M) | FLOPs (G) | FPS | Mem (GB) | Params (M) | FLOPs (G) | FPS | Mem (GB) |
-|:--|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| DivIll | 0.81 | 53.4 | 57.8 | **0.29** | 1.01 | 66.5 | 50.8 | **0.61** |
-| LPTN | 0.64 | 686.0 | 2.76 | 13.77 | **0.65** | 686.8 | 2.7 | 13.94 |
-| SERT | 1.87 | 119.7 | 3.5 | 1.92 | 2.18 | 139.3 | 3.4 | 2.31 |
-| HCANet | 6.15 | 122.4 | 6.2 | 2.01 | 7.05 | 181.1 | 6.0 | 2.23 |
-| SIT | 12.53 | 151.2 | 3.1 | 4.03 | 13.42 | 209.9 | 3.0 | 4.30 |
-| **PSRD-T** | **0.63** | **19.8** | **112.4** | 0.62 | 0.75 | **26.9** | **56.4** | 1.86 |
-| **PSRD-B** | 2.51 | 76.7 | 33.1 | 1.63 | 2.74 | 90.9 | 24.5 | 1.87 |
+| Method | Params (M) | FLOPs (G) | FPS | Mem (GB) |
+|:--|:--:|:--:|:--:|:--:|
+| DivIll | 0.81 | 53.4 | 57.8 | **0.29** |
+| LPTN | 0.64 | 686.0 | 2.76 | 13.77 |
+| SERT | 1.87 | 119.7 | 3.5 | 1.92 |
+| HCANet | 6.15 | 122.4 | 6.2 | 2.01 |
+| SIT | 12.53 | 151.2 | 3.1 | 4.03 |
+| **PSRD-T** | **0.63** | **19.8** | **112.4** | 0.62 |
+| **PSRD-B** | 2.51 | 76.7 | 33.1 | 1.63 |
+
+</div>
+
+<div align="center">
+
+<sub><b>Table 6.</b> Same comparison, 204 bands.</sub>
+
+| Method | Params (M) | FLOPs (G) | FPS | Mem (GB) |
+|:--|:--:|:--:|:--:|:--:|
+| DivIll | 1.01 | 66.5 | 50.8 | **0.61** |
+| LPTN | **0.65** | 686.8 | 2.7 | 13.94 |
+| SERT | 2.18 | 139.3 | 3.4 | 2.31 |
+| HCANet | 7.05 | 181.1 | 6.0 | 2.23 |
+| SIT | 13.42 | 209.9 | 3.0 | 4.30 |
+| **PSRD-T** | 0.75 | **26.9** | **56.4** | 1.86 |
+| **PSRD-B** | 2.74 | 90.9 | 24.5 | 1.87 |
 
 </div>
 
