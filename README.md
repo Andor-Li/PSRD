@@ -492,7 +492,6 @@ All metrics are computed on reflectance in `[0, 1]`, per image and then averaged
 
 - The **BJTU-UVA** and **BJTU-UVA-E** benchmarks, and the SIT baseline, come from *Automatic Spectral Calibration of Hyperspectral Images: Method, Dataset and Benchmark* (CVPR 2025); the dataset is distributed at [mic.bjtu.edu.cn/data/bjtu-uva](https://mic.bjtu.edu.cn/data/bjtu-uva/).
 - The linear-attention formulation follows [Transformers are RNNs](https://arxiv.org/abs/2006.16236) (Katharopoulos et al., ICML 2020).
-- The `LSCA` bottleneck follows the channel-attention design of [Restormer](https://github.com/swz30/Restormer); the hybrid LN/IN normalization follows common practice in restoration transformers.
 
 ---
 
