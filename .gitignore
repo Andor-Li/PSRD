@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Training artefacts
+train_loss/
+val_results/
+checkpoints/*/*_epoch*.pth
+
+# Data
+Datasets/
+data/
+*.npy
+*.mat

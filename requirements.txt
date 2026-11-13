@@ -1,0 +1,9 @@
+# Core dependencies
+torch>=2.0
+numpy>=1.23
+einops>=0.6
+scipy>=1.9
+tqdm>=4.64
+
+# Optional: parameter / FLOP counting (see model/PSRD.py __main__)
+thop>=0.1.1
