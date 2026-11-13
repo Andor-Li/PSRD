@@ -444,18 +444,18 @@ rmse:0.0491	psnr:29.1058	ergas:10.5382	sam:3.6049	ssim:0.9105
 
 ### Released checkpoints
 
-| Checkpoint | Setting | dim | α₀ | Epoch | Size |
-|:--|:--|:--:|:--:|:--:|:--:|
-| `psrd_dim32_alpha_04_BJTU_31.pth` | BJTU-UVA 31-band, **PSRD-T** | 32 | 0.4 | 468 | 7.5 MB |
-| `psrd_dim64_alpha_00_BJTU_31.pth` | BJTU-UVA 31-band, **PSRD-B** | 64 | 0.0 | 500 | 29 MB |
-| `psrd_dim32_alpha_10_BJTU_204.pth` | BJTU-UVA 204-band, PSRD-T | 32 | 1.0 | 421 | 8.8 MB |
-| `psrd_dim64_alpha_08_BJTU_204.pth` | BJTU-UVA 204-band, PSRD-B | 64 | 0.8 | 500 | 32 MB |
-| `psrd_dim32_alpha_09_BJTU_E_31.pth` | BJTU-UVA-E 31-band, PSRD-T | 32 | 0.9 | 50 | 7.5 MB |
-| `psrd_dim64_alpha_08_BJTU_E_31.pth` | BJTU-UVA-E 31-band, PSRD-B | 64 | 0.8 | 48 | 29 MB |
-| `psrd_dim32_alpha_08_BJTU_E_204.pth` | BJTU-UVA-E 204-band, PSRD-T | 32 | 0.8 | 49 | 8.8 MB |
-| `psrd_dim64_alpha_07_BJTU_E_204.pth` | BJTU-UVA-E 204-band, PSRD-B | 64 | 0.7 | 49 | 32 MB |
+| Checkpoint | Setting | dim | α₀ | Size |
+|:--|:--|:--:|:--:|:--:|
+| `psrd_dim32_alpha_04_BJTU_31.pth` | BJTU-UVA 31-band, **PSRD-T** | 32 | 0.4 | 7.5 MB |
+| `psrd_dim64_alpha_00_BJTU_31.pth` | BJTU-UVA 31-band, **PSRD-B** | 64 | 0.0 | 29 MB |
+| `psrd_dim32_alpha_10_BJTU_204.pth` | BJTU-UVA 204-band, PSRD-T | 32 | 1.0 | 8.8 MB |
+| `psrd_dim64_alpha_08_BJTU_204.pth` | BJTU-UVA 204-band, PSRD-B | 64 | 0.8 | 32 MB |
+| `psrd_dim32_alpha_09_BJTU_E_31.pth` | BJTU-UVA-E 31-band, PSRD-T | 32 | 0.9 | 7.5 MB |
+| `psrd_dim64_alpha_08_BJTU_E_31.pth` | BJTU-UVA-E 31-band, PSRD-B | 64 | 0.8 | 29 MB |
+| `psrd_dim32_alpha_08_BJTU_E_204.pth` | BJTU-UVA-E 204-band, PSRD-T | 32 | 0.8 | 8.8 MB |
+| `psrd_dim64_alpha_07_BJTU_E_204.pth` | BJTU-UVA-E 204-band, PSRD-B | 64 | 0.7 | 32 MB |
 
-Each file is a dict with `epoch`, `model_state_dict` and `optimizer_state_dict`, so it can also seed `--resume_path`.
+Each file is a dict with `model_state_dict` and `optimizer_state_dict`; `test.py` only reads the former.
 
 ---
 

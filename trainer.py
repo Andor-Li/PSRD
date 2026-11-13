@@ -142,8 +142,9 @@ def Trainer(opt):
         # Load optimizer
         optimizer_G.load_state_dict(checkpoint["optimizer_state_dict"])
 
-        # Load progress
-        start_epoch = checkpoint["epoch"]
+        # Load progress. Released checkpoints do not store `epoch`, so fall back
+        # to 0 and restart the schedule from there.
+        start_epoch = checkpoint.get("epoch", 0)
 
         print(f"==> Resumed from epoch {start_epoch}")
     else:
