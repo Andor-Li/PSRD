@@ -96,9 +96,9 @@ The paper motivates the architecture with three measurements on the BJTU-UVA tra
 | `CA_OIS` | `model/PSRD.py` | CA-CFD: FFT → fftshift → $M_l / M_h$ split → low branch through PGLA, high branch through a 3×3 local stream → 1×1 fusion. |
 | `LSCA` | `model/PSRD.py` | Bottleneck spectral–channel attention: 4 heads, attention over channels ($C/h \times C/h$), 3×3 depth-wise conv on QKV, residual output. |
 | `PG_AFPG` | `model/PSRD.py` | Prior projection + hybrid normalization → mask from $[F_e, F_d, \tilde{P}]$ → $F_e \odot M$ → 3×3 fusion with $F_d$. |
-| `HybridNorm2d` | `model/PSRD.py` | $\alpha\,\mathrm{LN}_{2d} + (1-\alpha)\,\mathrm{IN}_{2d}$ with $\alpha = \sigma(a)$, $a$ initialised from `--init_alpha`. |
+| `HybridNorm2d` | `model/PSRD.py` | $\alpha \mathrm{LN} + (1-\alpha) \mathrm{IN}$ mixing 2-D LayerNorm and InstanceNorm, with $\alpha = \sigma(a)$ and $a$ initialised from `--init_alpha`. |
 | `ConvBlock` | `model/PSRD.py` | $F + \rho \cdot \mathcal{C}_2(\delta(\mathcal{C}_1(F)))$, $\rho$ = `--residual_scale`. |
-| `PhysicsInformedLoss` | `loss/char_sam_loss.py` | $\mathcal{L}_{char} + \lambda_{sam}\mathcal{L}_{sam}$ (Charbonnier + spectral angle). |
+| `PhysicsInformedLoss` | `loss/char_sam_loss.py` | Charbonnier + spectral-angle term, weighted by $\lambda_{sam}$. |
 
 </div>
 
@@ -106,10 +106,12 @@ The paper motivates the architecture with three measurements on the BJTU-UVA tra
 
 ### Prior-guided linear attention
 
+The prior affinity is appended to the projected queries and keys, so the augmented kernel $QK^\top + \gamma PP^\top$ is evaluated without ever forming an $N \times N$ matrix.
+
 <div align="center">
 <img src="images/pgla.png" width="78%">
 <br>
-<sub><b>Figure 3.</b> PGLA. The prior affinity is concatenated onto the projected queries and keys, which reproduces $QK^\top + \gamma P_qP_k^\top$ exactly while keeping the computation linear in the number of spatial tokens.</sub>
+<sub><b>Figure 3.</b> PGLA. The prior affinity is concatenated onto the projected queries and keys, which reproduces the augmented kernel exactly while keeping the computation linear in the number of spatial tokens.</sub>
 </div>
 
 ### Default configuration
@@ -265,10 +267,10 @@ Adding the prior to the attention kernel costs nothing in optimisation: the two 
 <div align="center">
 <img src="images/parameter_sensitivity.png" width="92%">
 <br>
-<sub><b>Figure 6.</b> Sensitivity to the initial hybrid-normalisation coefficient $\alpha_0 \in \{0, 0.2, 0.4, 0.6, 0.8, 1.0\}$ on BJTU-UVA (31-band). Circled markers are the selected defaults.</sub>
+<sub><b>Figure 6.</b> Sensitivity to the initial hybrid-normalisation coefficient α₀ on BJTU-UVA (31-band). Circled markers are the selected defaults.</sub>
 </div>
 
-$\alpha_0$ interpolates between channel-wise LayerNorm ($\alpha_0 = 1$) and spatial InstanceNorm ($\alpha_0 = 0$). The two sizes prefer different ends of that range: **PSRD-T** is most stable at $\alpha_0 = 0.4$, i.e. it needs both statistics, whereas **PSRD-B** does best with pure InstanceNorm ($\alpha_0 = 0$). The circled points mark the settings used for the released weights; they were chosen for consistent behaviour across all five metrics, not for the peak of any single one.
+$\alpha_0 \in \lbrace 0, 0.2, 0.4, 0.6, 0.8, 1.0 \rbrace$ interpolates between channel-wise LayerNorm ($\alpha_0 = 1$) and spatial InstanceNorm ($\alpha_0 = 0$). The two sizes prefer different ends of that range: **PSRD-T** is most stable at $\alpha_0 = 0.4$, i.e. it needs both statistics, whereas **PSRD-B** does best with pure InstanceNorm ($\alpha_0 = 0$). The circled points mark the settings used for the released weights; they were chosen for consistent behaviour across all five metrics, not for the peak of any single one.
 
 ### Efficiency
 
