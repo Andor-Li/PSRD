@@ -18,6 +18,3 @@ Datasets/
 data/
 *.npy
 *.mat
-
-# Manuscript submission material
-images/Cover letter.pdf
