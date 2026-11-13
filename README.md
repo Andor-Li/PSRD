@@ -51,6 +51,8 @@ The design rests on three calibration-oriented modules plus one efficiency mecha
 
 ## ✨ Highlights
 
+<div align="center">
+
 | Feature | What it gives you |
 |:--|:--|
 | **Prior, not estimation** | The network never estimates an illumination field. A noise-gated log-derivative prior acts as a spectral-shape descriptor and enters both the attention kernel and the skip-fusion gate. |
@@ -59,6 +61,8 @@ The design rests on three calibration-oriented modules plus one efficiency mecha
 | **Linear attention with prior affinity** | The prior term $\gamma \hat{P}_q \hat{P}_k^\top$ is absorbed into an augmented kernel $[\phi(Q), \sqrt{\gamma}\hat{P}_q]$, so the dense $N \times N$ affinity matrix is never materialised. |
 | **Two sizes, one recipe** | **PSRD-T** (0.63 M params, 19.8 G FLOPs) and **PSRD-B** (2.51 M, 76.7 G) — the same architecture at a 4× compute budget, so you can pick the point that fits your deployment. |
 | **Real-time inference** | 112.4 FPS (T) and 33.1 FPS (B) at 512 × 512 on a single RTX 4090, versus 3.1 FPS for the transformer-based SIT baseline. |
+
+</div>
 
 ---
 
@@ -82,6 +86,8 @@ The paper motivates the architecture with three measurements on the BJTU-UVA tra
 
 ### Components
 
+<div align="center">
+
 | Module | Location | Role |
 |:--|:--|:--|
 | `NR_LDPE` | `model/PSRD.py` | Log compression → band-wise first-order difference → uncertainty gate $U = 1 - e^{-\alpha \bar{\mathcal{V}}}$ from a 3×3 local variance → $P = \mathrm{IN}(G \odot (1-U))$. |
@@ -93,6 +99,8 @@ The paper motivates the architecture with three measurements on the BJTU-UVA tra
 | `HybridNorm2d` | `model/PSRD.py` | $\alpha\,\mathrm{LN}_{2d} + (1-\alpha)\,\mathrm{IN}_{2d}$ with $\alpha = \sigma(a)$, $a$ initialised from `--init_alpha`. |
 | `ConvBlock` | `model/PSRD.py` | $F + \rho \cdot \mathcal{C}_2(\delta(\mathcal{C}_1(F)))$, $\rho$ = `--residual_scale`. |
 | `PhysicsInformedLoss` | `loss/char_sam_loss.py` | $\mathcal{L}_{char} + \lambda_{sam}\mathcal{L}_{sam}$ (Charbonnier + spectral angle). |
+
+</div>
 
 > **Naming.** The paper and Figure 1 call the bottleneck decomposition **CA-CFD**; the class in this repository is `CA_OIS`, the name it carried in an earlier draft. It is the same module, and the released checkpoints keep the corresponding parameter keys. **NR-LDPE**, **PGLA**, **PG-AFPG** and **LSCA** map one-to-one to `NR_LDPE`, `PGLA`, `PG_AFPG` and `LSCA`.
 
@@ -106,6 +114,8 @@ The paper motivates the architecture with three measurements on the BJTU-UVA tra
 
 ### Default configuration
 
+<div align="center">
+
 | Symbol | Flag | Default | Meaning |
 |:--|:--|:--:|:--|
 | $d$ | `--dim` | 32 | Base width. `32` → PSRD-T, `64` → PSRD-B |
@@ -118,6 +128,8 @@ The paper motivates the architecture with three measurements on the BJTU-UVA tra
 | — | `--lr` | 1e-4 | Adam, stepped ×0.5 every `--lr_decrease_epoch` (200) epochs |
 | — | `--crop_size` | 256 | Reserved: the cached patches are already 256 × 256 |
 
+</div>
+
 > The default $\alpha_0$ follows the sensitivity study below. Each released checkpoint carries the $\alpha_0$ it was trained with in its filename.
 
 ---
@@ -128,10 +140,14 @@ The paper motivates the architecture with three measurements on the BJTU-UVA tra
 
 Both 31-band checkpoints were re-evaluated in this repository (RTX 4060, PyTorch 2.5.1, the 116-scene test split) and match the paper exactly:
 
+<div align="center">
+
 | Model | PSNR ↑ | SSIM ↑ (%) | SAM ↓ | RMSE ↓ (%) | ERGAS ↓ | Paper (Table I) |
 |:--|:--:|:--:|:--:|:--:|:--:|:--|
 | **PSRD-T** (`dim32_alpha_04_BJTU_31`) | **29.1058** | **91.05** | **3.6049** | **4.91** | **10.5382** | 29.10 / 91.05 / 3.60 / 4.91 / 10.53 |
 | **PSRD-B** (`dim64_alpha_00_BJTU_31`) | **29.8254** | **92.30** | **3.4896** | **4.52** | **9.2347** | 29.82 / 92.30 / 3.48 / 4.52 / 9.23 |
+
+</div>
 
 ```bash
 python test.py --dataset_name BJTU_31 --merged_root /path/to/BJTU_resample/merged_opt \
@@ -140,7 +156,9 @@ python test.py --dataset_name BJTU_31 --merged_root /path/to/BJTU_resample/merge
 
 ### BJTU-UVA — natural illumination
 
-<div align="center"><sub><b>Table 1.</b> BJTU-UVA, 31 bands (400–700 nm). Best in <b>bold</b>.</sub></div>
+<div align="center">
+
+<sub><b>Table 1.</b> BJTU-UVA, 31 bands (400–700 nm). Best in <b>bold</b>.</sub>
 
 | Method | Venue | PSNR ↑ | SSIM ↑ | SAM ↓ | RMSE ↓ | ERGAS ↓ |
 |:--|:--|:--:|:--:|:--:|:--:|:--:|
@@ -153,7 +171,11 @@ python test.py --dataset_name BJTU_31 --merged_root /path/to/BJTU_resample/merge
 | **PSRD-T** | Ours | 29.10 | 91.05 | 3.60 | 4.91 | 10.53 |
 | **PSRD-B** | Ours | **29.82** | **92.30** | **3.48** | **4.52** | **9.23** |
 
-<div align="center"><sub><b>Table 2.</b> BJTU-UVA, 204 bands (400–1000 nm). Best in <b>bold</b>.</sub></div>
+</div>
+
+<div align="center">
+
+<sub><b>Table 2.</b> BJTU-UVA, 204 bands (400–1000 nm). Best in <b>bold</b>.</sub>
 
 | Method | PSNR ↑ | SSIM ↑ | SAM ↓ | RMSE ↓ | ERGAS ↓ |
 |:--|:--:|:--:|:--:|:--:|:--:|
@@ -166,9 +188,13 @@ python test.py --dataset_name BJTU_31 --merged_root /path/to/BJTU_resample/merge
 | **PSRD-T** | **27.21** | 90.07 | 6.79 | **5.25** | 8.91 |
 | **PSRD-B** | 27.06 | **90.98** | **6.24** | 5.37 | **8.88** |
 
+</div>
+
 ### BJTU-UVA-E — ten illumination conditions
 
-<div align="center"><sub><b>Table 3.</b> BJTU-UVA-E, 31 bands. Best in <b>bold</b>.</sub></div>
+<div align="center">
+
+<sub><b>Table 3.</b> BJTU-UVA-E, 31 bands. Best in <b>bold</b>.</sub>
 
 | Method | PSNR ↑ | SSIM ↑ | SAM ↓ | RMSE ↓ | ERGAS ↓ |
 |:--|:--:|:--:|:--:|:--:|:--:|
@@ -181,7 +207,11 @@ python test.py --dataset_name BJTU_31 --merged_root /path/to/BJTU_resample/merge
 | **PSRD-T** | 45.36 | 99.14 | 1.87 | 0.77 | 1.97 |
 | **PSRD-B** | **46.61** | **99.19** | **1.71** | **0.62** | **1.74** |
 
-<div align="center"><sub><b>Table 4.</b> BJTU-UVA-E, 204 bands. Best in <b>bold</b>.</sub></div>
+</div>
+
+<div align="center">
+
+<sub><b>Table 4.</b> BJTU-UVA-E, 204 bands. Best in <b>bold</b>.</sub>
 
 | Method | PSNR ↑ | SSIM ↑ | SAM ↓ | RMSE ↓ | ERGAS ↓ |
 |:--|:--:|:--:|:--:|:--:|:--:|
@@ -194,6 +224,8 @@ python test.py --dataset_name BJTU_31 --merged_root /path/to/BJTU_resample/merge
 | **PSRD-T** | 39.49 | 96.35 | 3.48 | 1.22 | 1.66 |
 | **PSRD-B** | **40.45** | **97.74** | **2.95** | **1.10** | **1.61** |
 
+</div>
+
 Per-condition breakdowns (ten illuminants × PSNR/SAM) are Tables III and IV of the paper. Against SIT on the 31-band set, PSRD-B gains the most under shadow (`sh`, +5.87 dB) and dusk (`du`, +3.89 dB); red-filtered illumination (`re`) stays the hardest condition for every method (best PSNR 39.93 dB).
 
 ### Ablation
@@ -204,6 +236,8 @@ Per-condition breakdowns (ten illuminants × PSNR/SAM) are Tables III and IV of 
 <sub><b>Figure 4.</b> Five-metric radar for PSRD-T (a) and PSRD-B (b) on BJTU-UVA (31-band), normalised so that larger is better. Removing any module shrinks the pentagon.</sub>
 </div>
 
+<div align="center">
+
 | Variant | Model | Reported effect |
 |:--|:--|:--|
 | w/o PG-AFPG | PSRD-T | ERGAS 10.53 → **18.76**; PSNR −1.29 dB (the largest single drop) |
@@ -211,6 +245,8 @@ Per-condition breakdowns (ten illuminants × PSNR/SAM) are Tables III and IV of 
 | w/o NR-LDPE | PSRD-B | PSNR → 29.12 dB; SAM → 3.53 (edge preservation degrades) |
 | w/o CA-CFD | PSRD-T | SAM → 3.65; RMSE → 5.23 % |
 | w/o PGLA (local conv instead) | PSRD-T | PSNR 29.10 → 28.09; SSIM 91.05 → 89.99; ERGAS 10.53 → 13.63 |
+
+</div>
 
 > The tiny model leans hardest on PGLA: without global prior-guided reasoning its ERGAS rises by 29 %. The base model compensates partially through capacity, which is why the same removal costs it less.
 
@@ -236,7 +272,9 @@ $\alpha_0$ interpolates between channel-wise LayerNorm ($\alpha_0 = 1$) and spat
 
 ### Efficiency
 
-<div align="center"><sub><b>Table 5.</b> Complexity and inference cost at 512 × 512 on a single RTX 4090. Left block: 31-band. Right block: 204-band.</sub></div>
+<div align="center">
+
+<sub><b>Table 5.</b> Complexity and inference cost at 512 × 512 on a single RTX 4090. Left block: 31-band. Right block: 204-band.</sub>
 
 | Method | Params (M) | FLOPs (G) | FPS | Mem (GB) | Params (M) | FLOPs (G) | FPS | Mem (GB) |
 |:--|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
@@ -247,6 +285,8 @@ $\alpha_0$ interpolates between channel-wise LayerNorm ($\alpha_0 = 1$) and spat
 | SIT | 12.53 | 151.2 | 3.1 | 4.03 | 13.42 | 209.9 | 3.0 | 4.30 |
 | **PSRD-T** | **0.63** | **19.8** | **112.4** | 0.62 | 0.75 | **26.9** | **56.4** | 1.86 |
 | **PSRD-B** | 2.51 | 76.7 | 33.1 | 1.63 | 2.74 | 90.9 | 24.5 | 1.87 |
+
+</div>
 
 > **Counting convention.** As in the paper's table, FLOPs are `thop` multiply–accumulates for a single 256 × 256 crop — the training crop size. Multiply by 4 for a full 512 × 512 scene (PSRD-T / 31-band: 19.8 G → 79.4 G MACs). Parameter counts measured with `torch` on the released checkpoints: 0.639 M, 2.510 M, 0.756 M, 2.742 M.
 
@@ -444,6 +484,8 @@ rmse:0.0491	psnr:29.1058	ergas:10.5382	sam:3.6049	ssim:0.9105
 
 ### Released checkpoints
 
+<div align="center">
+
 | Checkpoint | Setting | dim | α₀ | Size |
 |:--|:--|:--:|:--:|:--:|
 | `psrd_dim32_alpha_04_BJTU_31.pth` | BJTU-UVA 31-band, **PSRD-T** | 32 | 0.4 | 7.5 MB |
@@ -455,6 +497,8 @@ rmse:0.0491	psnr:29.1058	ergas:10.5382	sam:3.6049	ssim:0.9105
 | `psrd_dim32_alpha_08_BJTU_E_204.pth` | BJTU-UVA-E 204-band, PSRD-T | 32 | 0.8 | 8.8 MB |
 | `psrd_dim64_alpha_07_BJTU_E_204.pth` | BJTU-UVA-E 204-band, PSRD-B | 64 | 0.7 | 32 MB |
 
+</div>
+
 Each file is a dict with `model_state_dict` and `optimizer_state_dict`; `test.py` only reads the former.
 
 ---
@@ -463,6 +507,8 @@ Each file is a dict with `model_state_dict` and `optimizer_state_dict`; `test.py
 
 All metrics are computed on reflectance in `[0, 1]`, per image and then averaged over the test set — see `metrics_torch.py`.
 
+<div align="center">
+
 | Metric | Definition | Note |
 |:--|:--|:--|
 | **PSNR** ↑ | $10\log_{10}(1/\mathrm{MSE})$ | Peak fixed to 1.0 |
@@ -470,6 +516,8 @@ All metrics are computed on reflectance in `[0, 1]`, per image and then averaged
 | **SAM** ↓ | Mean spectral angle in degrees | Spectral-shape fidelity |
 | **RMSE** ↓ | $\sqrt{\mathrm{mean}((\hat{S}-S)^2)}$, reported in % | Radiometric accuracy |
 | **ERGAS** ↓ | $\frac{100}{r}\sqrt{\frac{1}{C}\sum_c (\mathrm{RMSE}_c/\mu_c)^2}$, $r = 4$ | Global spatial–spectral error |
+
+</div>
 
 ---
 
