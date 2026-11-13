@@ -29,7 +29,7 @@ PSRD treats ASC as an **implicit degradation restoration** problem rather than a
 $$
 X \approx S \odot D + \mathcal{N},
 \qquad
-\hat{S} = X + F_{\theta}\big(X,\, P(X)\big)
+\hat{S} = X + F_{\theta}\big(X, P(X)\big)
 $$
 
 where $D$ is a smooth low-frequency degradation field, $P(X)$ is a physically motivated spectral prior, and the network only has to predict the **residual correction** on top of the observation.
