@@ -44,7 +44,7 @@ The design rests on three calibration-oriented modules plus one efficiency mecha
 <div align="center">
 <img src="images/architecture.png" width="100%">
 <br>
-<sub><b>Figure 1.</b> Overview of PSRD. Left: the lightweight encoder–decoder with a single downsampling stage and an input-anchored residual output. Right: (a) NR-LDPE, (b) CA-CFD (labelled <i>CA-OIS</i> in the figure), (c) PG-AFPG.</sub>
+<sub><b>Figure 1.</b> Overview of PSRD. Left: the lightweight encoder–decoder with a single downsampling stage and an input-anchored residual output. Right: (a) NR-LDPE, (b) CA-CFD, (c) PG-AFPG.</sub>
 </div>
 
 ---
@@ -94,7 +94,7 @@ The paper motivates the architecture with three measurements on the BJTU-UVA tra
 | `ConvBlock` | `model/PSRD.py` | $F + \rho \cdot \mathcal{C}_2(\delta(\mathcal{C}_1(F)))$, $\rho$ = `--residual_scale`. |
 | `PhysicsInformedLoss` | `loss/char_sam_loss.py` | $\mathcal{L}_{char} + \lambda_{sam}\mathcal{L}_{sam}$ (Charbonnier + spectral angle). |
 
-> **Naming.** The paper text calls the bottleneck decomposition **CA-CFD**; the architecture figure labels it **CA-OIS**, and the class in this repository is `CA_OIS`. They are the same module. Likewise **NR-LDPE**, **PGLA**, **PG-AFPG** and **LSCA** map one-to-one to `NR_LDPE`, `PGLA`, `PG_AFPG` and `LSCA`.
+> **Naming.** The paper and Figure 1 call the bottleneck decomposition **CA-CFD**; the class in this repository is `CA_OIS`, the name it carried in an earlier draft. It is the same module, and the released checkpoints keep the corresponding parameter keys. **NR-LDPE**, **PGLA**, **PG-AFPG** and **LSCA** map one-to-one to `NR_LDPE`, `PGLA`, `PG_AFPG` and `LSCA`.
 
 ### Prior-guided linear attention
 
@@ -118,7 +118,7 @@ The paper motivates the architecture with three measurements on the BJTU-UVA tra
 | — | `--lr` | 1e-4 | Adam, stepped ×0.5 every `--lr_decrease_epoch` (200) epochs |
 | — | `--crop_size` | 256 | Reserved: the cached patches are already 256 × 256 |
 
-> The paper's sensitivity study covers $\alpha_0 \in \{0, 0.2, \dots, 1.0\}$ and finds $\alpha_0 = 0.4$ best for PSRD-T and $\alpha_0 = 0$ best for PSRD-B on BJTU-UVA (31-band). Each released checkpoint carries the $\alpha_0$ it was trained with in its filename.
+> The default $\alpha_0$ follows the sensitivity study below. Each released checkpoint carries the $\alpha_0$ it was trained with in its filename.
 
 ---
 
@@ -214,6 +214,26 @@ Per-condition breakdowns (ten illuminants × PSNR/SAM) are Tables III and IV of 
 
 > The tiny model leans hardest on PGLA: without global prior-guided reasoning its ERGAS rises by 29 %. The base model compensates partially through capacity, which is why the same removal costs it less.
 
+### Convergence
+
+<div align="center">
+<img src="images/convergence.png" width="86%">
+<br>
+<sub><b>Figure 5.</b> Validation PSNR on BJTU-UVA (31-band) for PGLA versus plain linear attention (prior terms removed). Dashed lines mark the approximate plateaus: ~200 epochs for PSRD-T, ~400 for PSRD-B.</sub>
+</div>
+
+Adding the prior to the attention kernel costs nothing in optimisation: the two curves track each other and reach the same plateau for both model sizes. PSRD-T stabilises around epoch 200, while the wider PSRD-B keeps improving until roughly epoch 400.
+
+### Parameter sensitivity
+
+<div align="center">
+<img src="images/parameter_sensitivity.png" width="92%">
+<br>
+<sub><b>Figure 6.</b> Sensitivity to the initial hybrid-normalisation coefficient $\alpha_0 \in \{0, 0.2, 0.4, 0.6, 0.8, 1.0\}$ on BJTU-UVA (31-band). Circled markers are the selected defaults.</sub>
+</div>
+
+$\alpha_0$ interpolates between channel-wise LayerNorm ($\alpha_0 = 1$) and spatial InstanceNorm ($\alpha_0 = 0$). The two sizes prefer different ends of that range: **PSRD-T** is most stable at $\alpha_0 = 0.4$, i.e. it needs both statistics, whereas **PSRD-B** does best with pure InstanceNorm ($\alpha_0 = 0$). The circled points mark the settings used for the released weights; they were chosen for consistent behaviour across all five metrics, not for the peak of any single one.
+
 ### Efficiency
 
 <div align="center"><sub><b>Table 5.</b> Complexity and inference cost at 512 × 512 on a single RTX 4090. Left block: 31-band. Right block: 204-band.</sub></div>
@@ -233,7 +253,7 @@ Per-condition breakdowns (ten illuminants × PSNR/SAM) are Tables III and IV of 
 <div align="center">
 <img src="images/complexity.png" width="70%">
 <br>
-<sub><b>Figure 5.</b> Accuracy–complexity trade-off on BJTU-UVA (31-band): parameters and FLOPs (top), inference speed and memory (bottom).</sub>
+<sub><b>Figure 7.</b> Accuracy–complexity trade-off on BJTU-UVA (31-band): parameters and FLOPs (top), inference speed and memory (bottom).</sub>
 </div>
 
 ### Qualitative comparison
@@ -241,13 +261,13 @@ Per-condition breakdowns (ten illuminants × PSNR/SAM) are Tables III and IV of 
 <div align="center">
 <img src="images/qualitative.png" width="100%">
 <br>
-<sub><b>Figure 6.</b> Absolute-error heat maps (cool blue ≈ 0, warm red ≈ 1). Rows: (a) BJTU-UVA 31-band, (b) BJTU-UVA 204-band, (c) BJTU-UVA-E 31-band, (d) BJTU-UVA-E 204-band.</sub>
+<sub><b>Figure 8.</b> Absolute-error heat maps (cool blue ≈ 0, warm red ≈ 1). Rows: (a) BJTU-UVA 31-band, (b) BJTU-UVA 204-band, (c) BJTU-UVA-E 31-band, (d) BJTU-UVA-E 204-band.</sub>
 </div>
 
 <div align="center">
 <img src="images/spectral_curves.png" width="72%">
 <br>
-<sub><b>Figure 7.</b> 204-band spectral profiles at pixels (231, 395) and (367, 310) under natural and red-filtered illumination. Baselines drift in amplitude or spike near 950 nm; PSRD tracks the reference across 400–1000 nm.</sub>
+<sub><b>Figure 9.</b> 204-band spectral profiles at pixels (231, 395) and (367, 310) under natural and red-filtered illumination. Baselines drift in amplitude or spike near 950 nm; PSRD tracks the reference across 400–1000 nm.</sub>
 </div>
 
 ---
